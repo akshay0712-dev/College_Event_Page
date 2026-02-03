@@ -13,11 +13,13 @@
     "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/vite": "^4.1.18",
     "clsx": "^2.1.1",
+    "firebase": "^12.8.0",
     "framer-motion": "^12.30.0",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icons": "^5.5.0",
+    "react-router-dom": "^7.13.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18"
   },
