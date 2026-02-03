@@ -1,0 +1,177 @@
+/* ===============================
+   BASE FOOTER
+================================ */
+.site-footer {
+  position: relative;
+  background-color: #0d0d0d;
+  color: #d6d6d6;
+  overflow: hidden;
+}
+
+/* ===============================
+   SPOTLIGHT EFFECT
+================================ */
+.footer-spotlight {
+  position: absolute;
+  top: -45%;
+  left: 50%;
+  width: 900px;
+  height: 900px;
+  transform: translateX(-50%) scale(0.95);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.10) 28%,
+    rgba(255, 255, 255, 0.05) 46%,
+    rgba(255, 255, 255, 0.02) 60%,
+    transparent 72%
+  );
+  opacity: 0.25;
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  z-index: 0;
+}
+
+/* Spotlight becomes clear on hover */
+.site-footer:hover .footer-spotlight {
+  opacity: 0.85;
+  transform: translateX(-50%) scale(1.05);
+}
+
+/* ===============================
+   FOOTER CONTAINER
+================================ */
+.footer-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 3rem;
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr 2fr;
+  gap: 3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ===============================
+   BRAND SECTION
+================================ */
+.footer-brand h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.footer-subtitle {
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+  opacity: 0.75;
+}
+
+.footer-desc {
+  margin-top: 0.9rem;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  opacity: 0.65;
+  max-width: 380px;
+}
+
+/* ===============================
+   NAVIGATION
+================================ */
+.footer-nav h5 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+.footer-nav a {
+  display: block;
+  font-size: 0.8rem;
+  color: #bdbdbd;
+  text-decoration: none;
+  margin-bottom: 0.45rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-nav a:hover {
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+/* ===============================
+   SOCIAL + META
+================================ */
+.footer-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* SOCIAL ICONS */
+.footer-social {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-social a {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #cfcfcf;
+  background: rgba(255, 255, 255, 0.04);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.footer-social a:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+/* LEGAL / META TEXT */
+.footer-legal {
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  opacity: 0.65;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 900px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-meta {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    padding: 3rem 1.25rem;
+    gap: 2rem;
+  }
+
+  .footer-social {
+    margin-top: 1rem;
+  }
+
+  .footer-spotlight {
+    width: 600px;
+    height: 600px;
+  }
+}
