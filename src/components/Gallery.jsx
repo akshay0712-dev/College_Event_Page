@@ -1,74 +1,90 @@
-import React from "react";
-import "../css/gallery.css";
-
-const galleryImages = [
-  {
-    src: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205",
-    alt: "DJ night celebration",
-    type: "wide",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1521334884684-d80222895322",
-    alt: "College dance performance",
-    type: "tall",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
-    alt: "Friends enjoying party",
-    type: "square",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91",
-    alt: "Live stage performance",
-    type: "tall",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
-    alt: "Celebration moment",
-    type: "wide",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1515169067865-5387ec356754",
-    alt: "Group photo with friends",
-    type: "square",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf",
-    alt: "Party lights and crowd",
-    type: "wide",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1520974735194-6c0f1d7a47bb",
-    alt: "Friends dancing together",
-    type: "square",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1506157786151-b8491531f063",
-    alt: "College night celebration",
-    type: "tall",
-  },
-];
+import React, { useState, useEffect } from 'react';
+import { db } from '../firebase/config';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const Gallery = () => {
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+
+  useEffect(() => {
+    const galleryCollection = collection(db, 'gallery');
+    const q = query(galleryCollection, orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const imagesData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setImages(imagesData);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching gallery:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const filteredImages = filter === 'all' 
+    ? images 
+    : images.filter(img => img.category === filter);
+
+  if (loading) {
+    return (
+      <section id="gallery" className="section gallery">
+        <div className="container">
+          <p style={{ textAlign: 'center', padding: '2rem' }}>Loading gallery...</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section id="gallery" className="gallery animate-on-scroll">
+    <section id="gallery" className="section gallery animate-on-scroll">
       <div className="container">
         <header className="section-header">
-          <h2>Moments & Memories 📸</h2>
-          <p className="section-tagline">
-            A night full of joy, laughter, and unforgettable memories
-          </p>
+          <h2>Fresher Party Moments 📸</h2>
+          <p className="section-tagline">Memories captured, moments cherished</p>
         </header>
 
-        <ul className="gta-gallery">
-          {galleryImages.map((image, index) => (
-            <li key={index} className={`gta-item ${image.type}`}>
-              <div className="gta-frame">
-                <img src={image.src} alt={image.alt} loading="lazy" />
-              </div>
-            </li>
+        <div className="flex justify-center gap-3 mb-8 flex-wrap">
+          {['all', 'party', 'dance', 'dj', 'food', 'games'].map((category) => (
+            <button
+              key={category}
+              onClick={() => setFilter(category)}
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
+                filter === category
+                  ? 'bg-amber-500 text-black'
+                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
+              }`}
+              style={{
+                backgroundColor: filter === category ? 'var(--color-accent)' : 'rgba(255,255,255,0.05)',
+                color: filter === category ? '#000' : '#999',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </button>
           ))}
-        </ul>
+        </div>
+
+        {filteredImages.length > 0 ? (
+          <ul className="gallery-grid">
+            {filteredImages.map((image) => (
+              <li key={image.id}>
+                <img
+                  src={image.url}
+                  alt={image.alt || 'Gallery image'}
+                  loading="lazy"
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p style={{ textAlign: 'center' }}>No photos in this category yet.</p>
+        )}
       </div>
     </section>
   );

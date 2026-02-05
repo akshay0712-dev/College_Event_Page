@@ -1,56 +1,32 @@
-import React from 'react';
-
-const eventTimeline = [
-  {
-    time: '06:30 PM',
-    icon: 'fa-door-open',
-    title: 'Entry & Welcome',
-    desc: 'Freshers arrive, registration, and a warm welcome by seniors.',
-  },
-  {
-    time: '07:00 PM',
-    icon: 'fa-microphone-lines',
-    title: 'Opening Ceremony',
-    desc: 'Welcome speech and introduction by the 2024 batch.',
-  },
-  {
-    time: '07:30 PM',
-    icon: 'fa-music',
-    title: 'Cultural Performances',
-    desc: 'Dance, singing, and fun performances to set the mood.',
-  },
-  {
-    time: '08:30 PM',
-    icon: 'fa-gamepad',
-    title: 'Games & Fun Activities',
-    desc: 'Interactive games, laughter, dares, and bonding moments.',
-  },
-  {
-    time: '09:30 PM',
-    icon: 'fa-headphones',
-    title: 'DJ Night',
-    desc: 'Dance floor opens with DJ beats and full party vibes 🔥',
-  },
-  {
-    time: '10:45 PM',
-    icon: 'fa-star',
-    title: 'Freshers’ Introduction',
-    desc: 'Confidence walk, introductions, and special fresher moments.',
-  },
-  {
-    time: '11:30 PM',
-    icon: 'fa-camera-retro',
-    title: 'Closing & Memories',
-    desc: 'Group photos, vote of thanks, and memories for life 💛',
-  },
-];
+import React, { useState, useEffect } from 'react';
+import { db } from '../firebase/config';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const EventCategories = () => {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const eventsCollection = collection(db, 'events');
+    const q = query(eventsCollection, orderBy('order', 'asc'));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const eventsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEvents(eventsData);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching timeline:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <section
-      id="events"
-      className="section events animate-on-scroll"
-    >
+    <section id="events" className="section events animate-on-scroll">
       <div className="container">
         <header className="section-header">
           <h2>Fresher Party Timeline 🎉</h2>
@@ -59,20 +35,26 @@ const EventCategories = () => {
           </p>
         </header>
 
-        <ul className="event-category-grid">
-          {eventTimeline.map((event, index) => (
-            <li key={index} className="event-category-card">
-              <i
-                className={`fa-solid ${event.icon} event-icon`}
-                aria-hidden="true"
-              ></i>
-              <h3>
-                {event.time} — {event.title}
-              </h3>
-              <p>{event.desc}</p>
-            </li>
-          ))}
-        </ul>
+        {loading ? (
+          <div style={{ textAlign: 'center', color: 'var(--muted)' }}>
+            <p>Loading schedule...</p>
+          </div>
+        ) : (
+          <ul className="event-category-grid">
+            {events.map((event) => (
+              <li key={event.id} className="event-category-card">
+                <i
+                  className={`fa-solid ${event.icon || 'fa-star'} event-icon`}
+                  aria-hidden="true"
+                ></i>
+                <h3>
+                  {event.time} — {event.title}
+                </h3>
+                <p>{event.desc}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );
