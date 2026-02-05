@@ -1,93 +1,66 @@
-import React, { useState } from 'react';
-import '../css/contact.css';
-const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
+import React from 'react';
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form Submitted:', formData);
-    alert('Thank you! Your message has been sent.');
-    setFormData({ name: '', email: '', message: '' });
-  };
+const faqs = [
+  {
+    q: '📍 Where is the fresher party happening?',
+    a: 'The fresher party will be held in the College Auditorium & Open Lawn area.',
+  },
+  {
+    q: '⏰ What time does the party start?',
+    a: 'The party kicks off at 7:00 PM sharp and goes on till 11:30 PM.',
+  },
+  {
+    q: '🎟️ Do I need to carry a physical ticket?',
+    a: 'Nope! Just show your digital pass on your phone at the entry gate.',
+  },
+  {
+    q: '👗 Is there any dress code?',
+    a: 'Yes! The theme is "Smart Party Wear". Dress sharp and be camera-ready!',
+  },
+  {
+    q: '🕺 Can I bring my friends?',
+    a: 'Of course! Friends are welcome as long as they have a valid entry pass.',
+  },
+  {
+    q: '🍔 Will food & drinks be available?',
+    a: 'Yes! Snacks and soft drinks will be available. VIP pass holders get complimentary treats.',
+  },
+  {
+    q: '🎶 What kind of music will be played?',
+    a: 'Expect a mix of Bollywood, Punjabi beats, EDM, and trending party tracks.',
+  },
+  {
+    q: '🔐 Is the event safe?',
+    a: 'Absolutely! We have security staff and volunteers to ensure a safe environment.',
+  },
+];
 
+const FAQ = () => {
   return (
-    <section id="contact" className="section contact animate-on-scroll">
-      <div className="container contact-grid">
+    <section id="faq" className="section faq animate-on-scroll">
+      <div className="container">
+        <header className="section-header">
+          <h2>Fresher Party FAQs 🎉</h2>
+          <p className="section-tagline">
+            Everything you need to know before the party starts!
+          </p>
+        </header>
 
-        {/* CONTACT FORM */}
-        <div className="contact-form-wrapper">
-          <header className="section-header contact-header-left">
-            <h2>Contact Us</h2>
-            <p className="section-tagline">
-              Have questions? We’d love to hear from you.
-            </p>
-          </header>
-
-          <form className="contact-form" onSubmit={handleSubmit}>
-            <div className="form-field">
-              <label htmlFor="name">Name</label>
-              <input
-                id="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="message">Message</label>
-              <textarea
-                id="message"
-                rows="4"
-                required
-                value={formData.message}
-                onChange={(e) =>
-                  setFormData({ ...formData, message: e.target.value })
-                }
-              />
-            </div>
-
-            <button type="submit" className="btn btn-accent">
-              Send Message
-            </button>
-          </form>
+        <div className="faq-groups accordion">
+          {faqs.map((faq, i) => (
+            <details key={i} className="faq-item">
+              <summary className="faq-question">
+                {faq.q}
+              </summary>
+              <p className="faq-answer">
+                {faq.a}
+              </p>
+            </details>
+          ))}
         </div>
-
-        {/* CONTACT INFO */}
-        <div className="contact-info-wrapper">
-          <h3>Location</h3>
-          <p>Pragati Maidan, New Delhi, India</p>
-
-          <div className="contact-map-wrapper">
-            <div className="contact-map">
-              <p>📍 Map will appear here</p>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
   );
 };
 
-export default Contact;
+export default FAQ;

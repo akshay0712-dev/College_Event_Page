@@ -4,58 +4,39 @@ const About = () => {
   return (
     <section id="about" className="section about animate-on-scroll">
       <div className="container">
-
-        {/* SECTION HEADER */}
         <header className="section-header">
-          <h2>Welcome Freshers 🎉</h2>
+          <h2>About the Fresher Party 🎉</h2>
           <p className="section-tagline">
-            A warm welcome to the 2025 batch from your seniors — the 2024 batch 💛
+            Welcome to the most awaited night of the year!
           </p>
         </header>
 
         <div className="about-grid">
-
-          {/* ABOUT TEXT */}
-          <div className="about-desc">
+          <div>
             <p>
-              Welcome to <strong>Government Engineering College, Kishanganj</strong> —
-              a place where friendships are built, dreams take shape, and memories
-              last a lifetime.
+              The GEC Kishanganj Fresher Party is more than just an event — it's a 
+              celebration of new beginnings, friendships, and unforgettable memories. 
+              Join us for an evening filled with music, dance, food, and fun!
             </p>
-
             <p>
-              This fresher party is not just an event, it’s our way of saying:
-              <em> “You’re not juniors anymore — you’re family now.” </em>
+              Whether you're a fresher or a senior, this is your chance to let loose, 
+              showcase your talents, and create memories that will last a lifetime.
             </p>
-
             <p>
-              As your seniors from the <strong>2024 batch</strong>, we know the
-              excitement, nervousness, and curiosity you’re feeling right now.
-              Trust us — this journey will be one of the most beautiful chapters
-              of your life.
+              Don't miss out on the DJ night, games, performances, and much more. 
+              See you on the dance floor! 🕺💃
             </p>
-
-            <blockquote style={{ marginTop: '1.5rem', fontStyle: 'italic' }}>
-              “Enjoy every lecture, every bunk, every laugh — because one day,
-              you’ll miss these days more than you think.” ❤️  
-              <br />
-              <span style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>
-                — With love, your seniors
-              </span>
-            </blockquote>
           </div>
 
-          {/* SIDE PANEL */}
-          <aside className="about-history">
-            <h3>What Awaits You ✨</h3>
-            <ul className="about-stats">
-              <li><strong>🎓</strong> New friendships & lifelong bonds</li>
-              <li><strong>🎶</strong> Cultural nights & unforgettable parties</li>
-              <li><strong>📚</strong> Learning, growth & self-discovery</li>
-              <li><strong>🏆</strong> Opportunities to shine & lead</li>
+          <aside className="about-stats">
+            <ul>
+              <li><strong>500+</strong> Expected Attendees</li>
+              <li><strong>6 Hours</strong> of Non-Stop Fun</li>
+              <li><strong>Live DJ</strong> Performance</li>
+              <li><strong>Food & Drinks</strong> Included</li>
+              <li><strong>Games & Prizes</strong> to Win</li>
             </ul>
           </aside>
-
         </div>
       </div>
     </section>
