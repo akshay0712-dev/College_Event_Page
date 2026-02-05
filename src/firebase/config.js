@@ -1,18 +1,32 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+// Change getFirestore to initializeFirestore
+import { initializeFirestore } from "firebase/firestore"; 
 import { getAuth } from "firebase/auth";
-
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBRFlZWbXGKW8JFrqh9-xLFXuEWbc3DYhA",
-  authDomain: "fresher-party-6a535.firebaseapp.com",
-  projectId: "fresher-party-6a535",
-  storageBucket: "fresher-party-6a535.firebasestorage.app",
-  messagingSenderId: "55653836216",
-  appId: "1:55653836216:web:9941414c1f5c52d7805b4d",
-  measurementId: "G-38WW3ZD8XS"
+  apiKey: "AIzaSyAMDaA7hco4hNXzphZa62EkJ2E-3qKq5zE",
+  authDomain: "gec-fresher-party.firebaseapp.com",
+  projectId: "gec-fresher-party",
+  storageBucket: "gec-fresher-party.firebasestorage.app",
+  messagingSenderId: "473377324797",
+  appId: "1:473377324797:web:7d62e990a1a70b6a4e8894"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+
+// ✅ Firestore FIXED
+// Use initializeFirestore to apply settings like experimentalForceLongPolling
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+  useFetchStreams: false,
+});
+
+// ✅ Authentication
 export const auth = getAuth(app);
+
+// ✅ Storage
+export const storage = getStorage(app);
+
+export default app;

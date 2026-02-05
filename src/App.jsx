@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { auth } from "./firebase/config";
 
-/* ========== LAYOUT ========== */
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-
-/* ========== SECTIONS ========== */
 import Hero from "./components/Hero";
 import About from "./components/About";
 import VideoHighlights from "./components/VideoHighlights";
@@ -17,7 +16,10 @@ import Team from "./components/Team";
 import FAQ from "./components/FAQ";
 import Contact from "./components/Contact";
 
-const App = () => {
+import AdminLogin from "./pages/admin/AdminLogin";
+import Dashboard from "./pages/admin/Dashboard";
+
+const ScrollObserver = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries, obs) => {
@@ -28,46 +30,59 @@ const App = () => {
           }
         });
       },
-      {
-        threshold: 0.15,
-        rootMargin: "0px 0px -60px 0px",
-      }
+      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" }
     );
 
     const animatedElements = document.querySelectorAll(".animate-on-scroll");
     animatedElements.forEach((el) => observer.observe(el));
-
     return () => observer.disconnect();
   }, []);
+  return null;
+};
+
+const MainSite = () => (
+  <div className="page-wrapper" id="top">
+    <ScrollObserver />
+    <Header />
+    <main id="main-content">
+      <Hero />
+      <About />
+      <VideoHighlights />
+      <EventCategories />
+      <Speakers />
+      <NewsFeed />
+      <Gallery />
+      <Tickets />
+      <Team />
+      <FAQ />
+      <Contact />
+    </main>
+    <Footer />
+  </div>
+);
+
+const App = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((u) => {
+      setUser(u);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return <div className="loader">Loading...</div>;
 
   return (
-    <div className="page-wrapper" id="top">
-      {/* HEADER */}
-      <Header />
-
-      {/* MAIN CONTENT */}
-      <main id="main-content">
-        <Hero
-          title="GEC Kishanganj Fresher Party 🎉"
-          date="Welcoming the 2025 Batch"
-          location="Government Engineering College, Kishanganj"
-        />
-
-        <About />
-        <VideoHighlights />
-        <EventCategories />
-        <Speakers />
-        <NewsFeed />
-        <Gallery />
-        <Tickets />
-        <Team />
-        <FAQ />
-        <Contact />
-      </main>
-
-      {/* FOOTER */}
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainSite />} />
+        <Route path="/login" element={user ? <Navigate to="/admin" /> : <AdminLogin />} />
+        <Route path="/admin" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+      </Routes>
+    </Router>
   );
 };
 
