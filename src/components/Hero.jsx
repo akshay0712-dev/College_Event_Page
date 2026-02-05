@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { db } from '../firebase/config';
+import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
-const Hero = ({ title, date, location }) => {
+const Hero = () => {
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -9,11 +13,50 @@ const Hero = ({ title, date, location }) => {
   });
 
   useEffect(() => {
-    const targetDate = new Date('2026-03-15T00:00:00').getTime();
+    const eventsCollection = collection(db, 'heroEvents');
+    const now = new Date();
+    const q = query(
+      eventsCollection,
+      where('eventDate', '>=', now),
+      orderBy('eventDate', 'asc'),
+      limit(1)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const eventData = {
+          id: snapshot.docs[0].id,
+          ...snapshot.docs[0].data()
+        };
+        setCurrentEvent(eventData);
+      } else {
+        setCurrentEvent(null);
+      }
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching hero event:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!currentEvent || !currentEvent.eventDate) return;
+
+    const targetDate = currentEvent.eventDate.toDate().getTime();
 
     const interval = setInterval(() => {
       const now = Date.now();
       const distance = Math.max(targetDate - now, 0);
+
+      if (distance === 0) {
+        clearInterval(interval);
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+        return;
+      }
 
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
@@ -30,7 +73,32 @@ const Hero = ({ title, date, location }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentEvent]);
+
+  if (loading) {
+    return (
+      <section id="home" className="hero">
+        <div className="hero-bg" aria-hidden="true"></div>
+        <div className="container hero-content">
+          <p style={{ textAlign: 'center', fontSize: '1.5rem' }}>
+            Loading event...
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (!currentEvent) {
+    return (
+      <section id="home" className="hero">
+        <div className="hero-bg" aria-hidden="true"></div>
+        <div className="container hero-content">
+          <h1 className="hero-title">No Upcoming Events</h1>
+          <p className="hero-meta">Stay tuned for new announcements!</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -38,21 +106,29 @@ const Hero = ({ title, date, location }) => {
       className="hero animate-on-scroll"
       aria-labelledby="hero-title"
     >
-      <div className="hero-bg" aria-hidden="true"></div>
+      <div 
+        className="hero-bg" 
+        aria-hidden="true"
+        style={{
+          backgroundImage: currentEvent.backgroundImage 
+            ? `url(${currentEvent.backgroundImage})` 
+            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        }}
+      ></div>
 
       <div className="container hero-content">
         <h1 id="hero-title" className="hero-title">
-          {title}
+          {currentEvent.title || 'Upcoming Event'}
         </h1>
 
         <p className="hero-meta">
           <span>
             <i className="fa-solid fa-calendar" aria-hidden="true"></i>{' '}
-            {date}
+            {currentEvent.date || 'Date TBA'}
           </span>
           <span>
             <i className="fa-solid fa-location-dot" aria-hidden="true"></i>{' '}
-            {location}
+            {currentEvent.location || 'Location TBA'}
           </span>
         </p>
 
