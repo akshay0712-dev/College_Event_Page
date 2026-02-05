@@ -106,15 +106,40 @@ const Hero = () => {
       className="hero animate-on-scroll"
       aria-labelledby="hero-title"
     >
-      <div 
-        className="hero-bg" 
-        aria-hidden="true"
-        style={{
-          backgroundImage: currentEvent.backgroundImage 
-            ? `url(${currentEvent.backgroundImage})` 
-            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-        }}
-      ></div>
+      {/* VIDEO BACKGROUND */}
+      {currentEvent.backgroundVideo ? (
+        <div className="hero-video-wrapper">
+          <video
+            className="hero-video"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source src={currentEvent.backgroundVideo} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      ) : currentEvent.backgroundImage ? (
+        <div 
+          className="hero-bg" 
+          aria-hidden="true"
+          style={{
+            backgroundImage: `url(${currentEvent.backgroundImage})`
+          }}
+        ></div>
+      ) : (
+        <div 
+          className="hero-bg" 
+          aria-hidden="true"
+          style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          }}
+        ></div>
+      )}
+
+      {/* Overlay */}
+      <div className="hero-overlay"></div>
 
       <div className="container hero-content">
         <h1 id="hero-title" className="hero-title">

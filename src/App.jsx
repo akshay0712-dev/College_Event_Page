@@ -19,6 +19,7 @@ import Contact from "./components/Contact";
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
 
+
 const ScrollObserver = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
