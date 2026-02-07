@@ -5,7 +5,7 @@ export const migrateAllCollections = async () => {
   try {
     console.log('🔄 Starting full database migration...');
     
-    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery'];
+const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos'];
     let totalUpdated = 0;
     const results = {};
     
@@ -48,3 +48,4 @@ export const migrateAllCollections = async () => {
     return { success: false, error };
   }
 };
+
