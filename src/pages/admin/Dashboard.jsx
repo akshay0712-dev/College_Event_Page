@@ -552,7 +552,8 @@ const Dashboard = () => {
                 type="button"
                 onClick={async () => {
                   const { migrateAllCollections } = await import(
-                    '../utils/migrateAllCollections'
+                    '../../utils/migrateGallery.js'
+                    
                   );
                   await migrateAllCollections();
                 }}
