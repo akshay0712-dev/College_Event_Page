@@ -9,6 +9,7 @@
     --color-bg-alt: #1a1a1a;
     --color-text: #EAEAEA;
     --color-text-muted: #BBBBBB;
+    --color-text-tertiary: #666666;
     --color-accent: #FF2D2D;
     --color-accent-glow: rgba(255, 45, 45, 0.4);
     --color-border: rgba(255, 255, 255, .1);
@@ -68,6 +69,12 @@
     }
 }
 
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* ========================================
    GLOBAL & RESET STYLES
 ======================================== */
@@ -102,16 +109,14 @@ body {
 /* ========================================
    UTILITY CLASSES - FIXED FOR VISIBILITY
 ======================================== */
-/* FIX: Make sections visible by default, animate only when marked */
 .animate-on-scroll {
-    opacity: 1; /* Changed from 0 to 1 */
+    opacity: 1;
 }
 
 .animate-on-scroll.is-visible {
     animation: fade-in-up 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
 }
 
-/* Alternative: If you want animations, use this instead */
 .animate-on-scroll.with-animation {
     opacity: 0;
 }
@@ -406,6 +411,35 @@ body {
 }
 
 /* ========================================
+   HERO VIDEO BACKGROUND
+======================================== */
+.hero-video-wrapper {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: -2;
+}
+
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 15, 15, 0.9) 0%, rgba(15, 15, 15, 0.3) 100%);
+    z-index: -1;
+}
+
+/* ========================================
    COUNTDOWN TIMER
 ======================================== */
 .countdown {
@@ -474,27 +508,201 @@ body {
 }
 
 /* ========================================
-   VIDEO SECTION
+   VIDEO HIGHLIGHTS SECTION - PROFESSIONAL
 ======================================== */
-.video-embed-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+.video {
+    background: linear-gradient(180deg, var(--color-bg) 0%, #0a0a0a 100%);
 }
 
-.video-caption {
-    text-align: center;
-    margin-top: var(--space-md);
-    color: var(--color-text-muted);
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
+}
+
+.video-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+    border-color: var(--color-accent);
+}
+
+.video-card.featured {
+    grid-column: span 2;
+}
+
+.video-card.landscape .custom-video-player {
+    aspect-ratio: 16 / 9;
+}
+
+.video-card.portrait .custom-video-player {
+    aspect-ratio: 9 / 16;
+    max-height: 600px;
+    margin: 0 auto;
+}
+
+.video-card.square .custom-video-player {
+    aspect-ratio: 1 / 1;
+}
+
+.video-player-wrapper {
+    position: relative;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+.custom-video-player {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        rgba(0, 0, 0, 0.1) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity var(--transition-speed);
+    cursor: pointer;
+}
+
+.video-overlay.playing {
+    opacity: 0;
+}
+
+.video-overlay:hover {
+    opacity: 1 !important;
+}
+
+.play-pause-btn {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 45, 45, 0.9);
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    backdrop-filter: blur(10px);
+}
+
+.play-pause-btn i {
+    font-size: 2rem;
+    color: #fff;
+    margin-left: 4px;
+}
+
+.play-pause-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 45, 45, 1);
+    box-shadow: 0 0 30px rgba(255, 45, 45, 0.6);
+}
+
+.play-pause-btn:active {
+    transform: scale(0.95);
+}
+
+.video-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-lg);
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.95) 0%,
+        rgba(0, 0, 0, 0.7) 70%,
+        transparent 100%
+    );
+    transform: translateY(100%);
+    transition: transform var(--transition-speed);
+    pointer-events: none;
+}
+
+.video-card:hover .video-info {
+    transform: translateY(0);
+}
+
+.video-title {
+    margin: 0 0 var(--space-xs);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.video-description {
+    margin: 0;
     font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    gap: var(--space-md);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--space-md);
+    opacity: 0.3;
+}
+
+.empty-state p {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
 }
 
 /* ========================================
-   EVENT CATEGORIES / TIMELINE - FIXED
+   EVENT CATEGORIES / TIMELINE
 ======================================== */
 .event-category-grid {
     display: grid;
@@ -512,7 +720,6 @@ body {
     border-radius: var(--radius-md);
     background: var(--color-bg-alt);
     transition: transform var(--transition-speed), border-color var(--transition-speed);
-    /* FIX: Ensure visibility */
     opacity: 1 !important;
     visibility: visible !important;
 }
@@ -546,7 +753,7 @@ body {
 }
 
 /* ========================================
-   SPEAKERS SECTION - FIXED
+   SPEAKERS SECTION
 ======================================== */
 .speaker-grid {
     display: grid;
@@ -565,7 +772,6 @@ body {
     text-align: center;
     padding-bottom: var(--space-md);
     transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-    /* FIX: Ensure visibility */
     opacity: 1 !important;
     visibility: visible !important;
 }
@@ -594,7 +800,7 @@ body {
 }
 
 /* ========================================
-   NEWS FEED SECTION - FIXED
+   NEWS FEED SECTION
 ======================================== */
 .news-cards {
     display: grid;
@@ -610,7 +816,6 @@ body {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-    /* FIX: Ensure visibility */
     opacity: 1 !important;
     visibility: visible !important;
 }
@@ -649,7 +854,7 @@ body {
 }
 
 /* ========================================
-   GALLERY SECTION - FIXED
+   GALLERY SECTION
 ======================================== */
 .gallery-grid {
     columns: 3 200px;
@@ -665,7 +870,6 @@ body {
     border-radius: var(--radius-sm);
     overflow: hidden;
     display: block;
-    /* FIX: Ensure visibility */
     opacity: 1 !important;
     visibility: visible !important;
 }
@@ -682,7 +886,7 @@ body {
 }
 
 /* ========================================
-   TICKETS SECTION - FIXED
+   TICKETS SECTION
 ======================================== */
 .ticket-grid {
     display: grid;
@@ -701,7 +905,6 @@ body {
     border-radius: var(--radius-md);
     background: var(--color-bg-alt);
     transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-    /* FIX: Ensure visibility */
     opacity: 1 !important;
     visibility: visible !important;
 }
@@ -764,7 +967,7 @@ body {
 }
 
 /* ========================================
-   TEAM SECTION - FIXED
+   TEAM SECTION
 ======================================== */
 .team-grid {
     display: grid;
@@ -781,7 +984,6 @@ body {
     border: 1px solid transparent;
     border-radius: var(--radius-md);
     transition: background-color var(--transition-speed), transform var(--transition-speed);
-    /* FIX: Ensure visibility */
     opacity: 1 !important;
     visibility: visible !important;
 }
@@ -1025,8 +1227,13 @@ body {
 /* ========================================
    RESPONSIVE DESIGN - MOBILE
 ======================================== */
+@media (max-width: 1024px) {
+    .video-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
-    /* Layout Adjustments */
     .about-grid,
     .contact-grid {
         grid-template-columns: 1fr;
@@ -1036,7 +1243,6 @@ body {
         text-align: left;
     }
 
-    /* Mobile Navigation */
     .nav-toggle {
         display: block;
         background: none;
@@ -1128,17 +1334,14 @@ body {
         display: block;
     }
 
-    /* Gallery Mobile */
     .gallery-grid {
         columns: 2 150px;
     }
 
-    /* Smaller spacing on mobile */
     .section {
         padding-block: var(--space-lg);
     }
 
-    /* Hero adjustments */
     .hero {
         min-height: 70vh;
     }
@@ -1151,11 +1354,37 @@ body {
         min-width: 70px;
         padding: var(--space-xs) var(--space-sm);
     }
+
+    .video-card.featured {
+        grid-column: span 1;
+    }
+
+    .video-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .play-pause-btn {
+        width: 60px;
+        height: 60px;
+    }
+
+    .play-pause-btn i {
+        font-size: 1.5rem;
+    }
+
+    .video-info {
+        padding: var(--space-md);
+    }
+
+    .video-title {
+        font-size: 1.1rem;
+    }
+
+    .video-description {
+        font-size: 0.85rem;
+    }
 }
 
-/* ========================================
-   RESPONSIVE DESIGN - DESKTOP
-======================================== */
 @media (min-width: 769px) {
     .nav-button-wrapper {
         display: inline-block;
@@ -1226,55 +1455,44 @@ body {
 }
 
 /* ========================================
-   DEBUGGING - Remove after testing
+   VIDEO CARD ANIMATIONS
 ======================================== */
-/* Uncomment these to debug visibility issues */
-/*
-.news-card {
-    border: 2px solid red !important;
+.video-card {
+    animation: fade-in-up 0.6s ease-out backwards;
 }
-.ticket-card {
-    border: 2px solid green !important;
+
+.video-card:nth-child(1) {
+    animation-delay: 0.1s;
 }
-.event-category-card {
-    border: 2px solid blue !important;
+.video-card:nth-child(2) {
+    animation-delay: 0.2s;
 }
-*/
+.video-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+.video-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+.play-pause-btn:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 4px;
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+======================================== */
+.custom-video-player,
+.video-overlay,
+.play-pause-btn {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
 
 /* ========================================
    END OF STYLESHEET
 ======================================== */
-/* ========================================
-   HERO VIDEO BACKGROUND
-======================================== */
-.hero-video-wrapper {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    z-index: -2;
-}
-
-.hero-video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    transform: translate(-50%, -50%);
-    object-fit: cover;
-}
-
-.hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(15, 15, 15, 0.9) 0%, rgba(15, 15, 15, 0.3) 100%);
-    z-index: -1;
-}
-
-/* Ensure content is above video */
-.hero-content {
-    position: relative;
-    z-index: 1;
-}
