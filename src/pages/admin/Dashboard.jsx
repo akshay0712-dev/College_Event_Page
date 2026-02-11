@@ -35,6 +35,7 @@ const Dashboard = () => {
   const [speakers, setSpeakers] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [galleryImages, setGalleryImages] = useState([]);
+  const [sponsors, setSponsors] = useState([]); // <--- NEW SPONSORS LIST STATE
 
   // Form States
   const [heroEvent, setHeroEvent] = useState({
@@ -98,6 +99,16 @@ const Dashboard = () => {
     description: '',
     thumbnail: '',
     orientation: 'landscape',
+    order: 1,
+    eventId: ''
+  });
+
+  // <--- NEW SPONSOR FORM STATE
+  const [sponsor, setSponsor] = useState({
+    name: '',
+    logo: '',
+    website: '',
+    tier: 'silver',
     order: 1,
     eventId: ''
   });
@@ -201,12 +212,21 @@ const Dashboard = () => {
       })
     );
 
+    // <--- NEW SPONSORS FETCHING
+    const sponsorsQuery = query(collection(db, 'sponsors'), orderBy('tier', 'asc'));
+    unsubscribers.push(
+      onSnapshot(sponsorsQuery, (snapshot) => {
+        setSponsors(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+      })
+    );
+
     return () => unsubscribers.forEach((unsub) => unsub());
   }, []);
 
   // Count linked items for each event
   useEffect(() => {
-    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos'];
+    // <--- ADDED 'sponsors' TO COLLECTIONS ARRAY
+    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos', 'sponsors'];
 
     const unsubscribes = collections.map((collectionName) => {
       return onSnapshot(collection(db, collectionName), (snapshot) => {
@@ -303,7 +323,8 @@ const Dashboard = () => {
   };
 
   const handleDeleteHeroEvent = async (id) => {
-    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos'];
+    // <--- ADDED 'sponsors' TO DELETION LOGIC
+    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos', 'sponsors'];
     const counts = linkedItemsCounts[id] || {};
     const totalItems = Object.values(counts).reduce((sum, count) => sum + count, 0);
 
@@ -731,6 +752,63 @@ const Dashboard = () => {
     }
   };
 
+  // ===== SPONSORS HANDLERS (NEW) =====
+  const handleAddSponsor = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const data = {
+        name: sponsor.name,
+        logo: sponsor.logo,
+        website: sponsor.website || '',
+        tier: sponsor.tier,
+        order: Number(sponsor.order),
+        eventId: sponsor.eventId || null,
+        createdAt: serverTimestamp()
+      };
+
+      if (editMode && editingId) {
+        await updateDoc(doc(db, 'sponsors', editingId), { ...data, updatedAt: serverTimestamp() });
+        alert('✅ Sponsor Updated!');
+        setEditMode(false);
+        setEditingId(null);
+      } else {
+        await addDoc(collection(db, 'sponsors'), data);
+        alert('🤝 Sponsor Added!');
+      }
+
+      setSponsor({ name: '', logo: '', website: '', tier: 'silver', order: 1, eventId: '' });
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+    setLoading(false);
+  };
+
+  const handleEditSponsor = (item) => {
+    setEditMode(true);
+    setEditingId(item.id);
+    setSponsor({
+      name: item.name || '',
+      logo: item.logo || '',
+      website: item.website || '',
+      tier: item.tier || 'silver',
+      order: item.order || 1,
+      eventId: item.eventId || ''
+    });
+    setActiveTab('sponsors');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteSponsor = async (id) => {
+    if (!window.confirm('Delete this sponsor?')) return;
+    try {
+      await deleteDoc(doc(db, 'sponsors', id));
+      alert('🗑️ Sponsor Deleted!');
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
+
   // Cancel Edit
   const handleCancelEdit = () => {
     setEditMode(false);
@@ -759,6 +837,8 @@ const Dashboard = () => {
     setSpeaker({ name: '', role: '', img: '', order: 1, eventId: '' });
     setTeamMember({ name: '', role: '', img: '', order: 1, eventId: '' });
     setGalleryImage({ url: '', alt: '', category: 'party', eventId: '' });
+    // Reset Sponsor
+    setSponsor({ name: '', logo: '', website: '', tier: 'silver', order: 1, eventId: '' });
   };
 
   // Format Date
@@ -867,7 +947,8 @@ const Dashboard = () => {
                 { id: 'videos', label: '🎬 Videos' },
                 { id: 'speakers', label: '🎤 Speakers' },
                 { id: 'team', label: '👥 Team' },
-                { id: 'gallery', label: '📸 Gallery' }
+                { id: 'gallery', label: '📸 Gallery' },
+                { id: 'sponsors', label: '🤝 Sponsors' } // <--- ADDED SPONSORS TAB
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -1975,6 +2056,134 @@ const Dashboard = () => {
                   </div>
                 </>
               )}
+
+              {/* SPONSORS TAB (NEW) */}
+              {activeTab === 'sponsors' && (
+                <>
+                  {/* Form */}
+                  <div className="bg-white/5 border border-white/10 rounded-3xl p-8">
+                    <form onSubmit={handleAddSponsor} className="space-y-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">
+                          {editMode ? '✏️ Edit Sponsor' : '🤝 Add Sponsor'}
+                        </h2>
+                        {editMode && (
+                          <button type="button" onClick={handleCancelEdit} className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">
+                            Cancel
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-2 uppercase">Company Name</label>
+                          <input
+                            type="text"
+                            placeholder="Acme Corporation"
+                            value={sponsor.name}
+                            onChange={(e) => setSponsor({ ...sponsor, name: e.target.value })}
+                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-amber-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-2 uppercase">Logo URL</label>
+                          <input
+                            type="url"
+                            placeholder="https://..."
+                            value={sponsor.logo}
+                            onChange={(e) => setSponsor({ ...sponsor, logo: e.target.value })}
+                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-amber-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-2 uppercase">Website (Optional)</label>
+                          <input
+                            type="url"
+                            placeholder="https://company.com"
+                            value={sponsor.website}
+                            onChange={(e) => setSponsor({ ...sponsor, website: e.target.value })}
+                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-2 uppercase">Sponsorship Tier</label>
+                          <select
+                            value={sponsor.tier}
+                            onChange={(e) => setSponsor({ ...sponsor, tier: e.target.value })}
+                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-amber-500"
+                          >
+                            <option value="platinum">Platinum (Top Tier)</option>
+                            <option value="gold">Gold</option>
+                            <option value="silver">Silver</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-2 uppercase">Display Order</label>
+                          <input
+                            type="number"
+                            value={sponsor.order}
+                            onChange={(e) => setSponsor({ ...sponsor, order: e.target.value })}
+                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <EventSelector
+                          value={sponsor.eventId}
+                          onChange={(val) => setSponsor({ ...sponsor, eventId: val })}
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-4 rounded-xl transition-all disabled:opacity-50"
+                      >
+                        {loading ? 'Processing...' : editMode ? '💾 Update' : '🤝 Add Sponsor'}
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Data Display */}
+                  <div className="bg-white/5 border border-white/10 rounded-3xl p-8">
+                    <h3 className="text-xl font-bold mb-4">All Sponsors ({sponsors.length})</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {sponsors.map((s) => (
+                        <div key={s.id} className="bg-black/40 border border-white/10 rounded-xl p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              s.tier === 'platinum' ? 'bg-gray-400 text-black' :
+                              s.tier === 'gold' ? 'bg-yellow-400 text-black' :
+                              'bg-gray-600 text-white'
+                            }`}>
+                              {s.tier}
+                            </span>
+                          </div>
+                          <img src={s.logo} alt={s.name} className="w-full h-20 object-contain mb-2 filter grayscale" />
+                          <h4 className="font-bold text-sm">{s.name}</h4>
+                          <div className="flex gap-2 mt-3">
+                            <button
+                              onClick={() => handleEditSponsor(s)}
+                              className="flex-1 bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-white px-3 py-2 rounded-lg text-xs font-bold transition-all"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteSponsor(s.id)}
+                              className="flex-1 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-3 py-2 rounded-lg text-xs font-bold transition-all"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {sponsors.length === 0 && (
+                        <p className="text-center text-gray-500 py-8 col-span-full">No sponsors yet</p>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
             </div>
           </div>
         </div>
