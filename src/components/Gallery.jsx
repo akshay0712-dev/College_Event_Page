@@ -102,8 +102,11 @@ const Gallery = () => {
     track.addEventListener("mouseleave", play);
 
     return () => {
-      track.removeEventListener("mouseenter", pause);
-      track.removeEventListener("mouseleave", play);
+      const isMobile = window.innerWidth < 768;
+      if (!isMobile) {
+        track.removeEventListener("mouseenter", pause);
+        track.removeEventListener("mouseleave", play);
+      }
       animationRef.current?.kill();
     };
   }, [imagesLoaded]);
@@ -158,7 +161,7 @@ const Gallery = () => {
               {/* Overlay */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6">
                 <h4 className="text-white text-xl font-semibold">
-                  {image.alt || "Untitled"}
+                  {image.alt || "Party🎉"}
                 </h4>
                 <p className="text-slate-300 text-sm">
                   {image.category}
@@ -172,8 +175,8 @@ const Gallery = () => {
         </div>
 
         {/* Gradient fade edges */}
-        <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-black to-transparent pointer-events-none"></div>
-        <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-black to-transparent pointer-events-none"></div>
+        <div className="absolute top-0 left-0 w-32 h-full bg-linear-to-r from-black to-transparent pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-r from-black to-transparent pointer-events-none"></div>
       </div>
     </section>
   );
