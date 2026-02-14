@@ -40,20 +40,28 @@ const EventCategories = () => {
             <p>Loading schedule...</p>
           </div>
         ) : (
-          <ul className="event-category-grid">
-            {events.map((event) => (
-              <li key={event.id} className="event-category-card">
-                <i
-                  className={`fa-solid ${event.icon || 'fa-star'} event-icon`}
-                  aria-hidden="true"
-                ></i>
-                <h3>
-                  {event.time} — {event.title}
-                </h3>
-                <p>{event.desc}</p>
-              </li>
-            ))}
-          </ul>
+          <ul className="flex flex-wrap justify-center gap-8">
+  {events.map((event) => (
+    <li
+      key={event.id}
+      className="w-full sm:w-[45%] lg:w-[30%] border border-white/10 rounded-2xl p-6 text-center transition duration-300 hover:-translate-y-2 hover:border-white/30 hover:shadow-xl"
+    >
+      <i
+        className={`fa-solid ${event.icon || "fa-star"} text-3xl mb-4 text-red-500`}
+        aria-hidden="true"
+      ></i>
+
+      <h3 className="text-lg font-semibold text-white">
+        {event.time} — {event.title}
+      </h3>
+
+      <p className="text-slate-400 mt-2">
+        {event.desc}
+      </p>
+    </li>
+  ))}
+</ul>
+
         )}
       </div>
     </section>
