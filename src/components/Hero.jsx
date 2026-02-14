@@ -103,7 +103,7 @@ const Hero = () => {
   return (
     <section
       id="home"
-      className="hero animate-on-scroll"
+      className="hero animate-on-scroll h-screen! "
       aria-labelledby="hero-title"
     >
       {/* VIDEO BACKGROUND */}
