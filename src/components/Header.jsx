@@ -54,7 +54,7 @@ const Header = () => {
                           bg-black/80 backdrop-blur-xl
                           border border-white/10
                           rounded-2xl shadow-xl
-                          flex flex-col items-center gap-5 py-6 text-white md:hidden">
+                          flex flex-col items-center gap-5 py-6 text-white">
             <a href="#about" onClick={() => setIsOpen(false)}>About</a>
             <a href="#events" onClick={() => setIsOpen(false)}>Events</a>
             <a href="#gallery" onClick={() => setIsOpen(false)}>Gallery</a>
