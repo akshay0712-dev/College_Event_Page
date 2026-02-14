@@ -18,6 +18,9 @@ import Team from "./components/Team";
 import FAQ from "./components/FAQ";
 import Contact from "./components/Contact";
 
+//  BackGround Snow Particles
+import BackgroundParticles from "./components/BackgroundParticles";
+
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
@@ -47,6 +50,7 @@ const ScrollObserver = () => {
 // Main Landing Page Layout
 const MainSite = () => (
   <div className="page-wrapper" id="top">
+    <BackgroundParticles />
     <ScrollObserver />
     <Header />
     <main id="main-content">

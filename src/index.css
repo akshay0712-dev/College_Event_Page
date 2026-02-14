@@ -884,9 +884,9 @@ body {
 /* ========================================
    VIDEO HIGHLIGHTS - FIXED VIDEO FITTING
 ======================================== */
-.video {
+/* .video {
     background: linear-gradient(180deg, var(--color-bg) 0%, #0a0a0a 100%);
-}
+} */
 
 .video-grid {
     display: grid;
@@ -1759,6 +1759,30 @@ body {
     will-change: transform;
     backface-visibility: hidden;
 }
+
+
+/*  Background Snow Particle */
+@keyframes drift {
+  0% {
+    transform: translate(0px, 0px);
+  }
+  100% {
+    transform: translate(var(--x-move), var(--y-move));
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(-10vh);
+  }
+  100% {
+    transform: translateY(110vh);
+  }
+}
+
+
+
+
 
 /* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
