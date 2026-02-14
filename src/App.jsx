@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { auth } from "./firebase/config";
 
 // Component Imports
@@ -12,20 +17,22 @@ import EventCategories from "./components/EventCategories";
 import Speakers from "./components/Speakers";
 import NewsFeed from "./components/NewsFeed";
 import Gallery from "./components/Gallery";
-import Sponsors from "./components/Sponsor" // <--- IMPORT ADDED
+import Sponsors from "./components/Sponsor";
 import Tickets from "./components/Tickets";
 import Team from "./components/Team";
 import FAQ from "./components/FAQ";
 import Contact from "./components/Contact";
-
-//  BackGround Snow Particles
+import FullScreenLoader from "./components/FullScreenLoader";
 import BackgroundParticles from "./components/BackgroundParticles";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
 
-// Intersection Observer for Scroll Animations
+
+// ===============================
+// Scroll Observer
+// ===============================
 const ScrollObserver = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -42,17 +49,24 @@ const ScrollObserver = () => {
 
     const animatedElements = document.querySelectorAll(".animate-on-scroll");
     animatedElements.forEach((el) => observer.observe(el));
+
     return () => observer.disconnect();
   }, []);
+
   return null;
 };
 
-// Main Landing Page Layout
+
+// ===============================
+// Main Landing Layout
+// ===============================
 const MainSite = () => (
-  <div className="page-wrapper" id="top">
+  <div className="page-wrapper relative" id="top">
     <BackgroundParticles />
     <ScrollObserver />
+
     <Header />
+
     <main id="main-content">
       <Hero />
       <About />
@@ -61,40 +75,69 @@ const MainSite = () => (
       <Speakers />
       <NewsFeed />
       <Gallery />
-      <Sponsors /> {/* <--- COMPONENT ADDED HERE */}
+      <Sponsors />
       <Tickets />
       <Team />
       <FAQ />
       <Contact />
     </main>
+
     <Footer />
   </div>
 );
 
-// Main App Component with Routing & Auth
+
+// ===============================
+// Main App
+// ===============================
 const App = () => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
+  const [minTimePassed, setMinTimePassed] = useState(false);
 
   useEffect(() => {
+    // 1️⃣ Firebase Auth Listener
     const unsubscribe = auth.onAuthStateChanged((u) => {
       setUser(u);
-      setLoading(false);
+      setAuthReady(true);
     });
-    return () => unsubscribe();
+
+    // 2️⃣ Minimum 2 second timer
+    const timer = setTimeout(() => {
+      setMinTimePassed(true);
+    }, 2000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
-  if (loading) return <div className="loader">Loading...</div>;
+  // Loader only disappears when BOTH are true
+  const loading = !(authReady && minTimePassed);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainSite />} />
-        <Route path="/login" element={user ? <Navigate to="/admin" /> : <AdminLogin />} />
-        <Route path="/admin" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-      </Routes>
-    </Router>
+    <>
+      <FullScreenLoader isLoading={loading} />
+
+      <Router>
+        <Routes>
+          <Route path="/" element={<MainSite />} />
+
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/admin" /> : <AdminLogin />}
+          />
+
+          <Route
+            path="/admin"
+            element={user ? <Dashboard /> : <Navigate to="/login" />}
+          />
+        </Routes>
+      </Router>
+    </>
   );
 };
+
 
 export default App;
