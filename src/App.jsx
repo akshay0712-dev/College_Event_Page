@@ -119,6 +119,7 @@ const App = () => {
   return (
     <>
       <FullScreenLoader isLoading={loading} />
+      {/* <FullScreenLoader isLoading={true} /> */}
 
       <Router>
         <Routes>
