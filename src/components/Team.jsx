@@ -23,7 +23,7 @@ const Team = () => {
       (error) => {
         console.error("Error fetching team:", error);
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();
@@ -44,7 +44,6 @@ const Team = () => {
   return (
     <section id="team" className="py-16 px-4">
       <div className="max-w-6xl mx-auto">
-        
         {/* Header */}
         <header className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">
@@ -88,15 +87,44 @@ const Team = () => {
                   "
                 />
 
-                <h4 className="text-lg font-semibold">
-                  {member.name}
-                </h4>
+                <h4 className="text-lg font-semibold">{member.name}</h4>
 
-                <p className="text-gray-500 text-sm mt-1">
-                  {member.role}
-                </p>
+                <p className="text-gray-500 text-sm mt-1">{member.role}</p>
               </li>
             ))}
+            <li
+              className="
+                  w-full
+                  sm:w-[45%]
+                  lg:w-[22%]
+                  text-center
+                  p-6
+                  rounded-2xl
+                  border border-[#212121]
+                  transition duration-300
+                  hover:-translate-y-2
+                  hover:shadow-xl
+                "
+            >
+              <img
+                src="https://akshay-dev.in/image.jpg"
+                alt="Akshay"
+                loading="lazy"
+                className="
+                    w-24 h-24
+                    mx-auto
+                    rounded-full
+                    object-cover
+                    mb-4
+                    border-4 border-[#212121]
+                    shadow-md
+                  "
+              />
+
+              <h4 className="text-lg font-semibold">Akshay Kumar</h4>
+
+              <p className="text-gray-500 text-sm mt-1">Tech Lead</p>
+            </li>
           </ul>
         ) : (
           <p className="text-center text-gray-500">

@@ -1025,9 +1025,12 @@ body {
     z-index: 3;
 }
 
-.video-card:hover .video-info {
+@media (min-width: 1024px) {
+  .video-card:hover .video-info {
     transform: translateY(0);
+  }
 }
+
 
 .video-title {
     margin: 0 0 var(--space-xs);
@@ -1304,7 +1307,7 @@ body {
 
 .ticket-badge {
     position: absolute;
-    top: 36px;
+    top: 30px;
     right: -40px;
     background-color: var(--color-accent);
     color: white;
