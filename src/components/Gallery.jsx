@@ -155,7 +155,7 @@ const Gallery = () => {
                 src={image.url}
                 alt={image.alt || "Gallery image"}
                 loading="lazy"
-                className=" w-auto h-50 md:h-100 object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110"
+                className=" w-auto h-80 md:h-100 object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110"
               />
 
               {/* Overlay */}
@@ -175,8 +175,8 @@ const Gallery = () => {
         </div>
 
         {/* Gradient fade edges */}
-        <div className="absolute top-0 left-0 w-32 h-full bg-linear-to-r from-black to-transparent pointer-events-none"></div>
-        <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-r from-black to-transparent pointer-events-none"></div>
+        {/* <div className="absolute top-0 left-0 w-32 h-full bg-linear-to-r from-black to-transparent pointer-events-none"></div> */}
+        {/* <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-r from-black to-transparent pointer-events-none"></div> */}
       </div>
     </section>
   );
