@@ -115,7 +115,7 @@ const VideoHighlights = () => {
                   </div>
 
                   {/* Video Info */}
-                  <div className="video-info">
+                  <div className="video-info hover:hidden! ">
                     <h3 className="video-title">{video.title}</h3>
                     {video.description && (
                       <p className="video-description">{video.description}</p>
