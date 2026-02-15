@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { Link } from 'react-router-dom'; // 1. Import Link
 
 const Hero = () => {
   const [currentEvent, setCurrentEvent] = useState(null);
@@ -169,9 +170,11 @@ const Hero = () => {
         </div>
 
         <div className="hero-cta" style={{ marginTop: '2rem' }}>
-          <a href="#tickets" className="btn btn-accent">
+          {/* 2. UPDATED REGISTER BUTTON */}
+          <Link to="/register" className="btn btn-accent">
             Register Now
-          </a>
+          </Link>
+          
           <a href="#about" className="btn btn-outline">
             Learn More
           </a>
