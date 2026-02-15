@@ -1,9 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[80vw]  md:w-auto">
@@ -44,7 +62,7 @@ const Header = () => {
             <a
               href="#tickets"
               className="ml-4 px-5 py-2 rounded-full 
-                         bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 
+                         bg-linear-to-r from-pink-500 via-purple-500 to-orange-500 
                          text-white font-semibold 
                          hover:scale-105 transition duration-300 text-nowrap"
             >
@@ -73,6 +91,7 @@ const Header = () => {
                  flex flex-col items-center gap-2 text-white mt-1 rounded-3xl 
                  border border-white/10 bg-[#05010b81] px-4 py-6 
                  shadow-[0_20px_45px_rgba(0,0,0,0.65)] backdrop-blur-xl"
+              ref={menuRef}
             >
               <a
                 href="#about"
