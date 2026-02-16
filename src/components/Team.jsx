@@ -92,39 +92,7 @@ const Team = () => {
                 <p className="text-gray-500 text-sm mt-1">{member.role}</p>
               </li>
             ))}
-            <li
-              className="
-                  w-full
-                  sm:w-[45%]
-                  lg:w-[22%]
-                  text-center
-                  p-6
-                  rounded-2xl
-                  border border-[#212121]
-                  transition duration-300
-                  hover:-translate-y-2
-                  hover:shadow-xl
-                "
-            >
-              <img
-                src="https://akshay-dev.in/image.jpg"
-                alt="Akshay"
-                loading="lazy"
-                className="
-                    w-24 h-24
-                    mx-auto
-                    rounded-full
-                    object-cover
-                    mb-4
-                    border-4 border-[#212121]
-                    shadow-md
-                  "
-              />
-
-              <h4 className="text-lg font-semibold">Akshay Kumar</h4>
-
-              <p className="text-gray-500 text-sm mt-1">Tech Lead</p>
-            </li>
+           
           </ul>
         ) : (
           <p className="text-center text-gray-500">

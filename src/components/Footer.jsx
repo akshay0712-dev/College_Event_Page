@@ -13,11 +13,11 @@ const Footer = () => {
 
           {/* Brand */}
           <div className="w-full md:w-[38%] space-y-5">
-            <h2 className="text-3xl font-bold text-white">
+            <a href="#top" className="text-3xl font-bold text-white ">
               🎭 Freshers' Night
-            </h2>
+            </a>
 
-            <p className="text-red-500 font-medium tracking-wide">
+            <p className="text-red-500 font-medium tracking-wide mt-4">
               GEC Kishanganj • 2026 Edition
             </p>
 
