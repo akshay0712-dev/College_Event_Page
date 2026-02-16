@@ -24,11 +24,11 @@ import FAQ from "./components/FAQ";
 import Contact from "./components/Contact";
 import FullScreenLoader from "./components/FullScreenLoader";
 import BackgroundParticles from "./components/BackgroundParticles";
+import JuniorRegistration from "./components/JuniorRegistration";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
-
 
 // ===============================
 // Scroll Observer
@@ -44,7 +44,7 @@ const ScrollObserver = () => {
           }
         });
       },
-      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" }
+      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" },
     );
 
     const animatedElements = document.querySelectorAll(".animate-on-scroll");
@@ -55,7 +55,6 @@ const ScrollObserver = () => {
 
   return null;
 };
-
 
 // ===============================
 // Main Landing Layout
@@ -85,7 +84,6 @@ const MainSite = () => (
     <Footer />
   </div>
 );
-
 
 // ===============================
 // Main App
@@ -134,11 +132,11 @@ const App = () => {
             path="/admin"
             element={user ? <Dashboard /> : <Navigate to="/login" />}
           />
+          <Route path="/register" element={<JuniorRegistration />} />
         </Routes>
       </Router>
     </>
   );
 };
-
 
 export default App;

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase/config";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { useNavigate } from "react-router-dom"; // 1. Import useNavigate
 
 const Tickets = () => {
   const [ticketTypes, setTicketTypes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // 2. Initialize navigate
 
   useEffect(() => {
     const ticketsCollection = collection(db, "tickets");
@@ -101,6 +103,7 @@ const Tickets = () => {
                 </ul>
 
                 <button
+                  onClick={() => navigate('/register')}
                   className={`
                     mt-auto
                     py-3
