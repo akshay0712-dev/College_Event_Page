@@ -35,7 +35,11 @@ const Dashboard = () => {
   const [speakers, setSpeakers] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [galleryImages, setGalleryImages] = useState([]);
-  const [sponsors, setSponsors] = useState([]); // <--- NEW SPONSORS LIST STATE
+  const [sponsors, setSponsors] = useState([]);
+  
+  // Registrations State
+  const [registrations, setRegistrations] = useState([]);
+  const [selectedRegistration, setSelectedRegistration] = useState(null);
 
   // Form States
   const [heroEvent, setHeroEvent] = useState({
@@ -103,7 +107,6 @@ const Dashboard = () => {
     eventId: ''
   });
 
-  // <--- NEW SPONSOR FORM STATE
   const [sponsor, setSponsor] = useState({
     name: '',
     logo: '',
@@ -212,11 +215,19 @@ const Dashboard = () => {
       })
     );
 
-    // <--- NEW SPONSORS FETCHING
+    // Sponsors
     const sponsorsQuery = query(collection(db, 'sponsors'), orderBy('tier', 'asc'));
     unsubscribers.push(
       onSnapshot(sponsorsQuery, (snapshot) => {
         setSponsors(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+      })
+    );
+
+    // Registrations
+    const registrationsQuery = query(collection(db, 'registrations'), orderBy('createdAt', 'desc'));
+    unsubscribers.push(
+      onSnapshot(registrationsQuery, (snapshot) => {
+        setRegistrations(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
       })
     );
 
@@ -225,8 +236,8 @@ const Dashboard = () => {
 
   // Count linked items for each event
   useEffect(() => {
-    // <--- ADDED 'sponsors' TO COLLECTIONS ARRAY
-    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos', 'sponsors'];
+    // Include all collections that might be linked to an event
+    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos', 'sponsors', 'registrations'];
 
     const unsubscribes = collections.map((collectionName) => {
       return onSnapshot(collection(db, collectionName), (snapshot) => {
@@ -253,6 +264,37 @@ const Dashboard = () => {
 
     return () => unsubscribes.forEach((unsub) => unsub());
   }, []);
+
+  // ===== REGISTRATION HANDLERS =====
+  const handleVerifyRegistration = async (regId, status, message = '') => {
+    setLoading(true);
+    try {
+      await updateDoc(doc(db, 'registrations', regId), {
+        status: status,
+        verificationMessage: message,
+        verifiedAt: serverTimestamp(),
+        verifiedBy: auth.currentUser.email
+      });
+      alert(`✅ Registration ${status === 'verified' ? 'Verified' : 'Rejected'}!`);
+      setSelectedRegistration(null);
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteRegistration = async (regId) => {
+    if (!window.confirm('Delete this registration permanently?')) return;
+    try {
+      await deleteDoc(doc(db, 'registrations', regId));
+      alert('🗑️ Registration Deleted!');
+      if (selectedRegistration && selectedRegistration.id === regId) {
+        setSelectedRegistration(null);
+      }
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
 
   // ===== HERO EVENTS HANDLERS =====
   const handleAddHeroEvent = async (e) => {
@@ -323,8 +365,7 @@ const Dashboard = () => {
   };
 
   const handleDeleteHeroEvent = async (id) => {
-    // <--- ADDED 'sponsors' TO DELETION LOGIC
-    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos', 'sponsors'];
+    const collections = ['tickets', 'news', 'events', 'speakers', 'team', 'gallery', 'videos', 'sponsors', 'registrations'];
     const counts = linkedItemsCounts[id] || {};
     const totalItems = Object.values(counts).reduce((sum, count) => sum + count, 0);
 
@@ -752,7 +793,7 @@ const Dashboard = () => {
     }
   };
 
-  // ===== SPONSORS HANDLERS (NEW) =====
+  // ===== SPONSORS HANDLERS =====
   const handleAddSponsor = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -813,7 +854,7 @@ const Dashboard = () => {
   const handleCancelEdit = () => {
     setEditMode(false);
     setEditingId(null);
-    // Reset all forms
+    setSelectedRegistration(null);
     setHeroEvent({
       title: '',
       date: '',
@@ -837,7 +878,6 @@ const Dashboard = () => {
     setSpeaker({ name: '', role: '', img: '', order: 1, eventId: '' });
     setTeamMember({ name: '', role: '', img: '', order: 1, eventId: '' });
     setGalleryImage({ url: '', alt: '', category: 'party', eventId: '' });
-    // Reset Sponsor
     setSponsor({ name: '', logo: '', website: '', tier: 'silver', order: 1, eventId: '' });
   };
 
@@ -941,6 +981,7 @@ const Dashboard = () => {
             <div className="flex flex-wrap gap-2 mb-8 overflow-x-auto pb-2">
               {[
                 { id: 'heroEvents', label: '🎯 Hero Events' },
+                { id: 'registrations', label: '📝 Registrations' },
                 { id: 'tickets', label: '🎫 Tickets' },
                 { id: 'news', label: '📰 News' },
                 { id: 'events', label: '⏰ Timeline' },
@@ -948,7 +989,7 @@ const Dashboard = () => {
                 { id: 'speakers', label: '🎤 Speakers' },
                 { id: 'team', label: '👥 Team' },
                 { id: 'gallery', label: '📸 Gallery' },
-                { id: 'sponsors', label: '🤝 Sponsors' } // <--- ADDED SPONSORS TAB
+                { id: 'sponsors', label: '🤝 Sponsors' }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -963,12 +1004,198 @@ const Dashboard = () => {
                   }`}
                 >
                   {tab.label}
+                  {tab.id === 'registrations' && registrations.length > 0 && (
+                    <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      {registrations.filter(r => r.status === 'pending').length}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
 
             {/* FORMS & DATA DISPLAY */}
             <div className="space-y-6">
+              
+              {/* REGISTRATIONS TAB */}
+              {activeTab === 'registrations' && (
+                <>
+                  <div className="bg-white/5 border border-white/10 rounded-3xl p-8">
+                    <h3 className="text-xl font-bold mb-4">
+                      All Registrations ({registrations.length})
+                      <span className="ml-3 text-sm text-amber-500">
+                        {registrations.filter(r => r.status === 'pending').length} Pending
+                      </span>
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      {registrations.map((reg) => (
+                        <div
+                          key={reg.id}
+                          className={`bg-black/40 border rounded-xl p-6 ${
+                            reg.status === 'pending' 
+                              ? 'border-amber-500/50' 
+                              : reg.status === 'verified' 
+                              ? 'border-green-500/50' 
+                              : 'border-red-500/50'
+                          }`}
+                        >
+                          <div className="flex gap-6">
+                            {/* Profile Photo */}
+                            <img
+                              src={reg.profileUrl}
+                              alt={reg.fullName}
+                              className="w-24 h-24 rounded-xl object-cover"
+                            />
+                            
+                            {/* Details */}
+                            <div className="flex-1">
+                              <div className="flex justify-between items-start mb-3">
+                                <div>
+                                  <h4 className="font-bold text-lg">{reg.fullName}</h4>
+                                  <p className="text-sm text-gray-400">
+                                    {reg.branch} • {reg.gender} • {reg.collegeRollNo}
+                                  </p>
+                                </div>
+                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                  reg.status === 'pending' 
+                                    ? 'bg-amber-500/20 text-amber-500' 
+                                    : reg.status === 'verified' 
+                                    ? 'bg-green-500/20 text-green-500' 
+                                    : 'bg-red-500/20 text-red-500'
+                                }`}>
+                                  {reg.status.toUpperCase()}
+                                </span>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                                <div>
+                                  <span className="text-gray-500">Email:</span> {reg.email}
+                                </div>
+                                <div>
+                                  <span className="text-gray-500">Phone:</span> {reg.phone}
+                                </div>
+                                <div>
+                                  <span className="text-gray-500">Reg No:</span> {reg.registrationNo}
+                                </div>
+                                <div>
+                                  <span className="text-gray-500">UTR:</span> {reg.utrNumber}
+                                </div>
+                              </div>
+
+                              {reg.verificationMessage && (
+                                <div className="mb-4 p-3 bg-white/5 rounded-lg text-sm">
+                                  <strong>Admin Message:</strong> {reg.verificationMessage}
+                                </div>
+                              )}
+                              
+                              <div className="flex gap-3">
+                                <button
+                                  onClick={() => setSelectedRegistration(reg)}
+                                  className="bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition-all"
+                                >
+                                  View Payment
+                                </button>
+                                
+                                {reg.status === 'pending' && (
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        const message = prompt('Optional verification message for the user:');
+                                        handleVerifyRegistration(reg.id, 'verified', message || 'Payment verified successfully!');
+                                      }}
+                                      disabled={loading}
+                                      className="bg-green-500/20 hover:bg-green-500 text-green-400 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
+                                    >
+                                      ✓ Verify
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        const message = prompt('Reason for rejection:');
+                                        if (message) handleVerifyRegistration(reg.id, 'rejected', message);
+                                      }}
+                                      disabled={loading}
+                                      className="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
+                                    >
+                                      ✗ Reject
+                                    </button>
+                                  </>
+                                )}
+                                
+                                <button
+                                  onClick={() => handleDeleteRegistration(reg.id)}
+                                  className="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition-all ml-auto"
+                                >
+                                  🗑️ Delete
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {registrations.length === 0 && (
+                        <p className="text-center text-gray-500 py-8">No registrations yet</p>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Payment Screenshot Modal */}
+              {selectedRegistration && (
+                <div 
+                  className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                  onClick={() => setSelectedRegistration(null)}
+                >
+                  <div 
+                    className="bg-white/10 border border-white/20 rounded-2xl p-6 max-w-2xl w-full"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-bold">Payment Screenshot - {selectedRegistration.fullName}</h3>
+                      <button
+                        onClick={() => setSelectedRegistration(null)}
+                        className="text-gray-400 hover:text-white text-2xl"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-400 mb-2">UTR Number: <span className="text-white font-mono">{selectedRegistration.utrNumber}</span></p>
+                    </div>
+                    <img
+                      src={selectedRegistration.paymentUrl}
+                      alt="Payment Screenshot"
+                      className="w-full rounded-xl"
+                    />
+                    <div className="flex gap-3 mt-6">
+                      {selectedRegistration.status === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => {
+                              const message = prompt('Optional verification message:');
+                              handleVerifyRegistration(selectedRegistration.id, 'verified', message || 'Payment verified!');
+                            }}
+                            className="flex-1 bg-green-500 hover:bg-green-400 text-white px-4 py-3 rounded-xl font-bold transition-all"
+                          >
+                            ✓ Verify Payment
+                          </button>
+                          <button
+                            onClick={() => {
+                              const message = prompt('Reason for rejection:');
+                              if (message) handleVerifyRegistration(selectedRegistration.id, 'rejected', message);
+                            }}
+                            className="flex-1 bg-red-500 hover:bg-red-400 text-white px-4 py-3 rounded-xl font-bold transition-all"
+                          >
+                            ✗ Reject Payment
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* HERO EVENTS TAB */}
               {activeTab === 'heroEvents' && (
                 <>
@@ -2057,7 +2284,7 @@ const Dashboard = () => {
                 </>
               )}
 
-              {/* SPONSORS TAB (NEW) */}
+              {/* SPONSORS TAB */}
               {activeTab === 'sponsors' && (
                 <>
                   {/* Form */}

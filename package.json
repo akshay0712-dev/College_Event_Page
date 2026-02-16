@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@imagekit/react": "^5.0.1",
     "@tailwindcss/vite": "^4.1.18",
+    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "firebase": "^12.8.0",
     "framer-motion": "^12.30.0",
