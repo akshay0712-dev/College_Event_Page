@@ -93,7 +93,7 @@ const FAQ = () => {
               type="submit"
               className="self-start px-6 py-3 rounded-xl
                          bg-white text-black font-semibold
-                         hover:bg-gray-200 transition"
+                         hover:bg-gray-200 transition cursor-pointer"
             >
               Ask Question
             </button>
