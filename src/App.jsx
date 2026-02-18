@@ -132,7 +132,7 @@ const App = () => {
             path="/admin"
             element={user ? <Dashboard /> : <Navigate to="/login" />}
           />
-          <Route path="/register" element={<JuniorRegistration />} />
+          <Route path="/booknow" element={<JuniorRegistration />} />
         </Routes>
       </Router>
     </>
