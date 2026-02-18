@@ -103,7 +103,7 @@ const Tickets = () => {
                 </ul>
 
                 <button
-                  onClick={() => navigate('/booknow')}
+                  onClick={() => navigate('/register')}
                   className={`
                     mt-auto
                     py-3
