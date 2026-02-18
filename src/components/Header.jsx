@@ -61,12 +61,9 @@ const Header = () => {
 
             <a
               href="#tickets"
-              className="ml-4 px-5 py-2 rounded-full 
-                         bg-linear-to-r from-pink-500 via-purple-500 to-orange-500 
-                         text-white font-semibold 
-                         hover:scale-105 transition duration-300 text-nowrap"
+              className="inline-block hover:scale-105 transition duration-300"
             >
-              Book Pass 🎟️
+              <img src="/ticket.png" alt="" srcset="" className="h-8 w-18" />
             </a>
           </nav>
 
@@ -136,7 +133,7 @@ const Header = () => {
                    bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 
                    font-semibold w-[98%]"
               >
-                Book Pass 🎟️
+                Book Pass  🎫
               </a>
             </motion.div>
           )}

@@ -39,9 +39,9 @@ const Contact = () => {
       {/* Content Container */}
       
       {/* <div className="relative z-10 max-w-[100vw] mx-auto px-6 py-24 flex"></div> */}
-      <div className="relative z-10 max-w-[100vw] mx-auto px-6 py-24 flex pointer-events-none">
+      <div className="relative z-10 max-w-[100vw] mx-auto px-6 py-24 flex  pointer-events-none">
         {/* Contact Card */}
-        <div className=" w-full md:w-1/2 lg:w-[28%] bg-white/10 backdrop-blur-xs border border-white/20 shadow-2xl rounded-2xl p-8 ml-auto">
+        <div className=" w-full md:w-1/2 lg:w-[28%] bg-white/10 backdrop-blur-xs border border-white/20 shadow-2xl rounded-2xl p-8 ml-auto pointer-events-auto">
           <h2 className="text-white text-2xl font-semibold mb-2">Contact Us</h2>
           <p className="mb-6 text-gray-400">
             Have questions? We’d love to hear from you.

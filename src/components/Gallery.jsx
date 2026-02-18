@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import { db } from "../firebase/config";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
@@ -20,7 +15,7 @@ const Gallery = () => {
   useEffect(() => {
     const galleryQuery = query(
       collection(db, "gallery"),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
 
     const unsubscribe = onSnapshot(
@@ -36,7 +31,7 @@ const Gallery = () => {
       (error) => {
         console.error("Error fetching gallery:", error);
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();
@@ -86,10 +81,11 @@ const Gallery = () => {
     const isMobile = window.innerWidth < 768;
 
     const totalWidth = track.scrollWidth / 2;
-
+    const pixelsPerSecond = 140; // try 60–120
+    const duration = totalWidth / pixelsPerSecond;
     animationRef.current = gsap.to(track, {
       x: -totalWidth,
-      duration: isMobile ? 40 : 20,
+      duration,
       ease: "none",
       repeat: -1,
       force3D: true,
@@ -136,16 +132,11 @@ const Gallery = () => {
         <h2 className="text-4xl md:text-6xl font-bold text-white">
           Endless Memories 📸
         </h2>
-        <p className="text-slate-400 mt-4">
-          Some moments never stop replaying
-        </p>
+        <p className="text-slate-400 mt-4">Some moments never stop replaying</p>
       </div>
 
       <div className="relative w-full overflow-hidden">
-        <div
-          ref={trackRef}
-          className="flex gap-8 w-max will-change-transform"
-        >
+        <div ref={trackRef} className="flex gap-8 w-max will-change-transform">
           {loopImages.map((image, index) => (
             <div
               key={`${image.id}-${index}`}
@@ -163,9 +154,7 @@ const Gallery = () => {
                 <h4 className="text-white text-xl font-semibold">
                   {image.alt || "Party🎉"}
                 </h4>
-                <p className="text-slate-300 text-sm">
-                  {image.category}
-                </p>
+                <p className="text-slate-300 text-sm">{image.category}</p>
               </div>
 
               {/* Soft border glow */}
